@@ -1,22 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
-import { useLivePalette } from "@/hooks/useLivePalette";
+import { usePalette } from "@/context/PaletteContext";
 import Hero from "@/components/Hero";
+import About from "@/components/About";
+import Skills from "@/components/Skills";
 
 export default function Home() {
-  const palette = useLivePalette();
-
-  useEffect(() => {
-    console.log(
-      `%c🎨 ${palette.timeLabel} · ${palette.seasonLabel}`,
-      `color: ${palette.primary}; font-size: 14px; font-weight: bold;`
-    );
-  }, [palette]);
+  const palette = usePalette();
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
       <Hero palette={palette} />
+      <About palette={palette} />
+      <Skills palette={palette} />
     </main>
   );
 }

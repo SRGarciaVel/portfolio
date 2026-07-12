@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PaletteProvider } from "@/context/PaletteContext";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +30,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Sebastián García Velásquez" }],
   openGraph: {
     title: "Sebastián García — Desarrollador Full Stack",
-    description: "Portafolio interactivo con paleta de colores dinámica según hora y estación.",
+    description:
+      "Portafolio interactivo con paleta de colores dinámica según hora y estación.",
     type: "website",
   },
 };
@@ -39,10 +43,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <PaletteProvider>
+          <Navbar />
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </PaletteProvider>
       </body>
     </html>
   );
