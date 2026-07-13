@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
@@ -13,21 +13,35 @@ export default function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const smootherRef = useRef<ScrollSmoother | null>(null);
+  const [smootherActive, setSmootherActive] = useState(false);
 
   useEffect(() => {
-    // Respect reduced-motion preference
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    // Touch devices (phones/tablets) get native scroll instead of
+    // ScrollSmoother. Virtualized smoothing on touch competes with the
+    // browser's own momentum scroll and is a common source of jank on
+    // mid-range Android hardware and non-Chrome mobile browsers (e.g.
+    // Samsung Internet). Every place in the app that calls
+    // ScrollSmoother.get() already falls back to scrollIntoView() when
+    // it's undefined, so this degrades cleanly — nav links, CTA buttons,
+    // etc. keep working exactly the same.
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+    if (isTouchDevice || prefersReduced) {
+      return;
+    }
+
     smootherRef.current = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: prefersReduced ? 0 : 1.2,
+      smooth: 1.2,
       effects: true,
-      smoothTouch: 0.1,
       normalizeScroll: true,
     });
+    setSmootherActive(true);
 
     return () => {
       smootherRef.current?.kill();
@@ -35,7 +49,7 @@ export default function SmoothScrollProvider({
   }, []);
 
   return (
-    <div id="smooth-wrapper">
+    <div id="smooth-wrapper" className={smootherActive ? "gsap-smooth-active" : ""}>
       <div id="smooth-content">{children}</div>
     </div>
   );

@@ -56,27 +56,26 @@ export default function Hero({ palette }: HeroProps) {
   useMagnetic(primaryBtnRef, 0.4);
   useMagnetic(secondaryBtnRef, 0.3);
 
-  // Symmetric drifting blobs
+  const blobTweensRef = useRef<gsap.core.Tween[]>([]);
+
   useEffect(() => {
     if (!blobsRef.current) return;
     const blobs = blobsRef.current.children;
-    const tweens: gsap.core.Tween[] = [];
 
-    Array.from(blobs).forEach((blob, i) => {
-      tweens.push(
-        gsap.to(blob, {
-          x: `random(-100, 100)`,
-          y: `random(-80, 80)`,
-          scale: `random(0.88, 1.15)`,
-          duration: 14 + i * 4,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        })
-      );
-    });
+    blobTweensRef.current = Array.from(blobs).map((blob, i) =>
+      gsap.to(blob, {
+        x: `random(-100, 100)`,
+        y: `random(-80, 80)`,
+        scale: `random(0.88, 1.15)`,
+        duration: 14 + i * 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        paused: true,
+      })
+    );
 
-    return () => tweens.forEach((t) => t.kill());
+    return () => blobTweensRef.current.forEach((t) => t.kill());
   }, []);
 
   useEffect(() => {
@@ -151,12 +150,10 @@ export default function Hero({ palette }: HeroProps) {
   }, []);
 
   useEffect(() => {
-    if (!glowTweenRef.current) return;
-    if (inView) {
-      glowTweenRef.current.play();
-    } else {
-      glowTweenRef.current.pause();
+    if (glowTweenRef.current) {
+      inView ? glowTweenRef.current.play() : glowTweenRef.current.pause();
     }
+    blobTweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
   }, [inView]);
 
   return (

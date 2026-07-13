@@ -183,14 +183,21 @@ body {
 
 /* ─────────────────────────────────────────
    SCROLLSMOOTHER
+   By default #smooth-wrapper/#smooth-content behave like normal elements
+   (safe for touch devices, which skip ScrollSmoother entirely). The fixed/
+   hidden treatment ScrollSmoother needs is only applied via the
+   .gsap-smooth-active class, added by JS exclusively when
+   ScrollSmoother.create() actually runs. Applying it unconditionally would
+   trap touch devices in a non-scrollable page once ScrollSmoother is
+   skipped for them.
    ───────────────────────────────────────── */
-#smooth-wrapper {
+.gsap-smooth-active#smooth-wrapper {
   overflow: hidden;
   position: fixed;
   inset: 0;
 }
 
-#smooth-content {
+.gsap-smooth-active #smooth-content {
   overflow: visible;
   width: 100%;
 }
