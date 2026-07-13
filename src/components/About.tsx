@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useInView } from "@/hooks/useInView";
 import type { Palette } from "@/lib/colorSystem";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -16,7 +18,9 @@ export default function About({ palette }: AboutProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const photoRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const ringTweenRef = useRef<gsap.core.Tween | null>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const { ref: viewRef, inView } = useInView<HTMLElement>(0.1);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -70,15 +74,29 @@ export default function About({ palette }: AboutProps) {
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
+      paused: true,
     });
+    ringTweenRef.current = tween;
     return () => {
       tween.kill();
     };
   }, []);
 
+  useEffect(() => {
+    if (!ringTweenRef.current) return;
+    if (inView) {
+      ringTweenRef.current.play();
+    } else {
+      ringTweenRef.current.pause();
+    }
+  }, [inView]);
+
   return (
     <section
-      ref={sectionRef}
+      ref={(el) => {
+        sectionRef.current = el;
+        viewRef.current = el;
+      }}
       id="sobre-mi"
       className="relative min-h-screen flex items-center justify-center px-6 md:px-12 py-32 overflow-hidden"
       style={{ backgroundColor: palette.bg }}
@@ -91,9 +109,9 @@ export default function About({ palette }: AboutProps) {
 
       <div
         ref={panelRef}
-        className="glass relative z-10 w-full max-w-6xl rounded-[2.5rem] px-10 py-16 md:px-20 md:py-24"
+        className="glass relative z-10 w-full max-w-6xl rounded-[2.5rem] px-6 py-14 md:px-20 md:py-24"
       >
-        <div className="grid md:grid-cols-[320px_1fr] gap-14 md:gap-20 items-center">
+        <div className="grid md:grid-cols-[320px_1fr] gap-8 md:gap-20 items-center">
           {/* Photo with breathing glow ring + subtle scroll parallax */}
           <div ref={photoRef} data-speed="1.06" className="flex justify-center md:justify-start">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
@@ -112,11 +130,14 @@ export default function About({ palette }: AboutProps) {
                   boxShadow: `0 0 48px ${palette.glow}`,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                {/* next/image: lazy-loads automatically when off-screen,
+                    serves an optimized/resized format instead of the raw file */}
+                <Image
                   src="/sebastian.jpg"
                   alt="Sebastián García Velásquez"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 256px, 320px"
+                  className="object-cover"
                 />
               </div>
             </div>

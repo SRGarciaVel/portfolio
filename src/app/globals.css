@@ -145,6 +145,17 @@ body {
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
+/* Chip — visually identical to glass-pill but WITHOUT its own backdrop-filter.
+   Use this for small elements nested inside an already-blurred .glass /
+   .glass-strong parent (badges, tags, icons inside a card). Blurring the
+   backdrop behind a chip that's already sitting on a blurred surface costs
+   real GPU time for zero visible difference — this is a pure perf win. */
+.chip {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
 .glass-sheen {
   position: absolute;
   inset: 0;
@@ -182,4 +193,26 @@ body {
 #smooth-content {
   overflow: visible;
   width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   MOBILE PERFORMANCE
+   Lighter blur radii on phones: backdrop-filter is one of the most
+   GPU-expensive CSS operations, and mobile GPUs are weaker and
+   battery-constrained. The visual difference is barely perceptible;
+   the battery/thermal difference is not.
+   ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .glass {
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+  .glass-strong {
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+  }
+  .glass-pill {
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+  }
 }

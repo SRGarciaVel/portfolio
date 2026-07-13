@@ -1,0 +1,428 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ExternalLink } from "lucide-react";
+import { useInView } from "@/hooks/useInView";
+import type { Palette } from "@/lib/colorSystem";
+
+gsap.registerPlugin(ScrollTrigger);
+
+function GithubIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z" />
+    </svg>
+  );
+}
+
+function LockIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
+
+interface ProjectsProps {
+  palette: Palette;
+}
+
+const PROJECTS = [
+  {
+    id: "gestionfactura",
+    index: "01",
+    title: "GestionFactura",
+    subtitle: "Sistema de Gestión de Facturación Móvil",
+    description:
+      "Plataforma completa para Masisa S.A. que automatiza la facturación de telefonía corporativa. Pipeline ETL con sincronización a SAP, dashboard de KPIs en tiempo real y autenticación segura con JWT.",
+    result: "↓ 98% tiempo de procesamiento · 0% errores en imputación",
+    stack: ["Python", "Flask", "React", "PostgreSQL", "JWT", "SAP"],
+    variant: "dashboard" as const,
+    github: null,
+    private: true,
+  },
+  {
+    id: "fgcdle",
+    index: "02",
+    title: "FGCdle",
+    subtitle: "Quiz Musical sobre Soundtracks de Videojuegos",
+    description:
+      "Aplicación tipo Heardle centrada en OSTs de videojuegos de pelea, desplegada en producción con base de usuarios activa. Backend con fuzzy matching para validar respuestas, frontend con sistema de audio por etapas.",
+    result: "En producción · Cloudflare R2 · Supabase · Vercel",
+    stack: ["FastAPI", "React", "Vite", "Tailwind", "Supabase"],
+    variant: "game" as const,
+    github: "https://github.com/SRGarciaVel",
+    private: false,
+  },
+  {
+    id: "amadeus",
+    index: "03",
+    title: "Amadeus Replica",
+    subtitle: "Asistente Conversacional con IA Generativa",
+    description:
+      "Agente con memoria semántica vía pgvector, pipeline de voz completo (Whisper STT → LLM → síntesis neural) e integración con avatar Live2D. Construido para entender IA aplicada a nivel de sistema, no solo llamadas a una API.",
+    result: "pgvector · Groq LLM · Whisper STT · Kokoro-ONNX TTS",
+    stack: ["FastAPI", "pgvector", "PostgreSQL", "Python"],
+    variant: "ai" as const,
+    github: "https://github.com/SRGarciaVel",
+    private: false,
+  },
+];
+
+function DashboardMock({ palette }: { palette: Palette }) {
+  const barsRef = useRef<HTMLDivElement>(null);
+  const heights = [40, 65, 50, 85, 60, 95, 70];
+
+  useEffect(() => {
+    if (!barsRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        barsRef.current!.children,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          duration: 0.8,
+          stagger: 0.06,
+          ease: "power3.out",
+          transformOrigin: "bottom",
+          scrollTrigger: { trigger: barsRef.current, start: "top 85%" },
+        }
+      );
+    });
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div className="w-full h-full flex flex-col justify-end gap-3 p-6">
+      <div className="flex gap-2 mb-2">
+        {[palette.primary, palette.secondary, palette.accent].map((c, i) => (
+          <div
+            key={i}
+            className="chip rounded-lg px-3 py-2 flex-1"
+            style={{ borderColor: c + "40" }}
+          >
+            <div className="w-6 h-1.5 rounded-full mb-1.5" style={{ backgroundColor: c }} />
+            <div className="w-10 h-1 rounded-full opacity-40" style={{ backgroundColor: palette.textMuted }} />
+          </div>
+        ))}
+      </div>
+      <div ref={barsRef} className="flex items-end gap-2 h-24">
+        {heights.map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-t-md"
+            style={{
+              height: `${h}%`,
+              backgroundColor: i % 2 === 0 ? palette.primary : palette.secondary,
+              opacity: 0.75,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GameMock({ palette }: { palette: Palette }) {
+  const barsRef = useRef<HTMLDivElement>(null);
+  const tweensRef = useRef<gsap.core.Tween[]>([]);
+  const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
+
+  useEffect(() => {
+    if (!barsRef.current) return;
+    const bars = Array.from(barsRef.current.children);
+    tweensRef.current = bars.map((bar, i) =>
+      gsap.to(bar, {
+        scaleY: gsap.utils.random(0.3, 1),
+        duration: 0.4 + Math.random() * 0.4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: i * 0.05,
+        paused: true,
+      })
+    );
+    return () => tweensRef.current.forEach((t) => t.kill());
+  }, []);
+
+  // Only spend CPU animating the waveform while it's actually on screen
+  useEffect(() => {
+    tweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
+  }, [inView]);
+
+  return (
+    <div ref={viewRef} className="w-full h-full flex flex-col items-center justify-center gap-6 p-6">
+      <div
+        className="w-16 h-16 rounded-full flex items-center justify-center chip"
+        style={{ boxShadow: `0 0 32px ${palette.glow}` }}
+      >
+        <div
+          className="w-0 h-0 ml-1"
+          style={{
+            borderTop: "10px solid transparent",
+            borderBottom: "10px solid transparent",
+            borderLeft: `16px solid ${palette.primary}`,
+          }}
+        />
+      </div>
+      <div ref={barsRef} className="flex items-center gap-1.5 h-16">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-1.5 rounded-full"
+            style={{
+              height: "100%",
+              backgroundColor: i % 3 === 0 ? palette.primary : palette.secondary,
+              opacity: 0.7,
+              transform: "scaleY(0.5)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AIMock({ palette }: { palette: Palette }) {
+  const ringsRef = useRef<HTMLDivElement>(null);
+  const tweensRef = useRef<gsap.core.Tween[]>([]);
+  const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
+
+  useEffect(() => {
+    if (!ringsRef.current) return;
+    const rings = Array.from(ringsRef.current.children);
+    tweensRef.current = rings.map((ring, i) =>
+      gsap.to(ring, {
+        scale: 1.6,
+        opacity: 0,
+        duration: 2.4,
+        repeat: -1,
+        delay: i * 0.6,
+        ease: "power1.out",
+        paused: true,
+      })
+    );
+    return () => tweensRef.current.forEach((t) => t.kill());
+  }, []);
+
+  useEffect(() => {
+    tweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
+  }, [inView]);
+
+  return (
+    <div ref={viewRef} className="w-full h-full flex items-center justify-center p-6">
+      <div className="relative w-32 h-32 flex items-center justify-center">
+        <div ref={ringsRef} className="absolute inset-0">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="absolute inset-0 rounded-full border-2"
+              style={{ borderColor: palette.primary, opacity: 0.5 }}
+            />
+          ))}
+        </div>
+        <div
+          className="w-14 h-14 rounded-full chip flex items-center justify-center"
+          style={{ boxShadow: `0 0 40px ${palette.glow}` }}
+        >
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: palette.primary }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const MOCKS = {
+  dashboard: DashboardMock,
+  game: GameMock,
+  ai: AIMock,
+};
+
+export default function Projects({ palette }: ProjectsProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        headerRef.current,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+        }
+      );
+
+      rowRefs.current.forEach((row, i) => {
+        if (!row) return;
+        const fromX = i % 2 === 0 ? -40 : 40;
+        gsap.fromTo(
+          row,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: { trigger: row, start: "top 80%" },
+          }
+        );
+        void fromX;
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="proyectos"
+      className="relative px-6 md:px-16 lg:px-24 py-32 overflow-hidden"
+      style={{ backgroundColor: palette.bg }}
+    >
+      <div
+        data-speed="0.92"
+        className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
+        style={{ backgroundColor: palette.primary }}
+      />
+
+      <div ref={headerRef} className="max-w-3xl mb-20 md:mb-28 relative z-10">
+        <span
+          className="text-xs font-semibold tracking-[0.2em] uppercase mb-5 block"
+          style={{ color: palette.primary }}
+        >
+          Proyectos
+        </span>
+        <h2
+          className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
+          style={{ color: palette.text }}
+        >
+          Cosas que construí{" "}
+          <span style={{ color: palette.primary }}>y sostengo en producción</span>
+        </h2>
+      </div>
+
+      <div className="flex flex-col gap-24 md:gap-32 relative z-10">
+        {PROJECTS.map((project, i) => {
+          const Mock = MOCKS[project.variant];
+          const imageFirst = i % 2 === 0;
+
+          return (
+            <div
+              key={project.id}
+              ref={(el) => {
+                rowRefs.current[i] = el;
+              }}
+              className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
+            >
+              <div className={imageFirst ? "md:order-1" : "md:order-2"}>
+                <div className="glass rounded-[2rem] aspect-[4/3] overflow-hidden relative">
+                  <div className="absolute top-0 left-0 right-0 h-9 flex items-center gap-1.5 px-4 border-b" style={{ borderColor: palette.border }}>
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
+                  </div>
+                  <div className="absolute inset-0 top-9">
+                    <Mock palette={palette} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={imageFirst ? "md:order-2" : "md:order-1"}>
+                <span
+                  className="text-sm font-bold tracking-widest mb-4 block"
+                  style={{ color: palette.primary, opacity: 0.6 }}
+                >
+                  {project.index}
+                </span>
+                <h3
+                  className="text-3xl md:text-4xl font-bold mb-2 tracking-tight"
+                  style={{ color: palette.text }}
+                >
+                  {project.title}
+                </h3>
+                <p
+                  className="text-sm font-medium mb-5"
+                  style={{ color: palette.primary }}
+                >
+                  {project.subtitle}
+                </p>
+                <p
+                  className="text-base leading-relaxed mb-5"
+                  style={{ color: palette.textMuted }}
+                >
+                  {project.description}
+                </p>
+                <p
+                  className="text-sm font-semibold mb-6"
+                  style={{ color: palette.text }}
+                >
+                  {project.result}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-7">
+                  {project.stack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="glass-pill rounded-full px-3 py-1.5 text-xs font-medium"
+                      style={{ color: palette.textMuted }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {project.private ? (
+                  <span
+                    className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-medium"
+                    style={{ color: palette.textMuted, opacity: 0.75 }}
+                  >
+                    <LockIcon size={14} />
+                    Código privado · Propiedad de la empresa
+                  </span>
+                ) : (
+                  <a
+                    href={project.github ?? "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-semibold transition-transform duration-300 hover:scale-105"
+                    style={{ color: palette.text }}
+                  >
+                    <GithubIcon size={16} />
+                    Ver código
+                    <ExternalLink size={13} style={{ opacity: 0.6 }} />
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

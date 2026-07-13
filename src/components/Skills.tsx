@@ -154,7 +154,7 @@ export default function Skills({ palette }: SkillsProps) {
         {CATEGORIES.map((cat, i) => (
           <TiltCard key={cat.title} index={i}>
             <div
-              className="glass-pill w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 mb-5"
+              className="chip w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 mb-5"
             >
               <svg
                 width="22"
@@ -174,7 +174,7 @@ export default function Skills({ palette }: SkillsProps) {
               {cat.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="glass-pill rounded-full px-3 py-1.5 text-[11px] font-medium"
+                  className="chip rounded-full px-3 py-1.5 text-[11px] font-medium"
                   style={{ color: palette.textMuted }}
                 >
                   {tag}

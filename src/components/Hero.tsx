@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import BlurText from "./BlurText";
+import { useInView } from "@/hooks/useInView";
+import { useMagnetic } from "@/hooks/useMagnetic";
 import type { Palette } from "@/lib/colorSystem";
 
 interface HeroProps {
@@ -23,40 +26,21 @@ function isLightColor(hex: string): boolean {
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6;
 }
 
-function useMagnetic(ref: React.RefObject<HTMLElement | null>, strength = 0.35) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });
-    const yTo = gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" });
-
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const relX = e.clientX - (rect.left + rect.width / 2);
-      const relY = e.clientY - (rect.top + rect.height / 2);
-      xTo(relX * strength);
-      yTo(relY * strength);
-    };
-
-    const onLeave = () => {
-      xTo(0);
-      yTo(0);
-    };
-
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [ref, strength]);
+/** Same navigation mechanism as the Navbar: goes through ScrollSmoother
+ *  instead of a native anchor jump, which would otherwise desync
+ *  ScrollSmoother's virtual scroll position and lock up further scrolling. */
+function scrollToSection(href: string) {
+  const smoother = ScrollSmoother.get();
+  if (smoother) {
+    smoother.scrollTo(href, true, "top top");
+  } else {
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  }
 }
 
 export default function Hero({ palette }: HeroProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const statsRowRef = useRef<HTMLDivElement>(null);
   const blobsRef = useRef<HTMLDivElement>(null);
@@ -66,6 +50,8 @@ export default function Hero({ palette }: HeroProps) {
   const numberRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const light = isLightColor(palette.bg);
+  const glowTweenRef = useRef<gsap.core.Tween | null>(null);
+  const { ref: sectionInViewRef, inView } = useInView<HTMLElement>(0.1);
 
   useMagnetic(primaryBtnRef, 0.4);
   useMagnetic(secondaryBtnRef, 0.3);
@@ -120,8 +106,7 @@ export default function Hero({ palette }: HeroProps) {
       { y: 40, opacity: 0, scale: 0.97 },
       { y: 0, opacity: 1, scale: 1, duration: 1.1 }
     )
-      .fromTo(badgeRef.current, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "-=0.6")
-      .fromTo(titleRef.current, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "+=0.9")
+      .fromTo(titleRef.current, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "+=0.7")
       .fromTo(ctaRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
       .fromTo(
         statsRowRef.current?.children ?? [],
@@ -157,14 +142,26 @@ export default function Hero({ palette }: HeroProps) {
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
+      paused: true,
     });
+    glowTweenRef.current = tween;
     return () => {
       tween.kill();
     };
   }, []);
 
+  useEffect(() => {
+    if (!glowTweenRef.current) return;
+    if (inView) {
+      glowTweenRef.current.play();
+    } else {
+      glowTweenRef.current.pause();
+    }
+  }, [inView]);
+
   return (
     <section
+      ref={sectionInViewRef}
       id="hero"
       className="relative min-h-screen flex items-center justify-center px-6 md:px-12 py-24 overflow-hidden grain"
       style={{ backgroundColor: palette.bg }}
@@ -189,28 +186,19 @@ export default function Hero({ palette }: HeroProps) {
 
       <div
         ref={panelRef}
-        className="glass-strong relative z-10 w-full max-w-4xl rounded-[2.5rem] px-8 py-14 md:px-16 md:py-16 text-center"
+        className="glass-strong relative z-10 w-full max-w-4xl rounded-[2.5rem] px-6 py-14 md:px-16 md:py-16 text-center"
       >
         <div className="glass-sheen" />
 
-        <div ref={badgeRef} className="mb-8 flex justify-center">
-          <span
-            className="glass-pill rounded-full px-6 py-2.5 text-sm font-medium tracking-wide"
-            style={{ color: palette.textMuted }}
-          >
-            {palette.timeLabel} · {palette.seasonLabel}
-          </span>
-        </div>
-
         <BlurText
           as="h1"
-          text="Sebastián García"
+          text="Sebastián García Velásquez"
           delay={0.3}
           wordDelay={0.15}
           align="center"
           defaultColor={palette.text}
-          colorOverrides={{ 1: palette.primary }}
-          className="text-5xl md:text-7xl font-bold tracking-tight mb-5 leading-[1.02]"
+          colorOverrides={{ 1: palette.primary, 2: palette.primary }}
+          className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-5 leading-[1.05]"
         />
 
         <p
@@ -243,6 +231,10 @@ export default function Hero({ palette }: HeroProps) {
             <a
               ref={primaryBtnRef}
               href="#proyectos"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("#proyectos");
+              }}
               className="relative block rounded-2xl px-8 py-4 font-semibold text-sm md:text-base"
               style={{
                 backgroundColor: palette.primary,
@@ -257,7 +249,11 @@ export default function Hero({ palette }: HeroProps) {
           <a
             ref={secondaryBtnRef}
             href="#contacto"
-            className="glass-pill rounded-2xl px-8 py-4 font-semibold text-sm md:text-base"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("#contacto");
+            }}
+            className="chip rounded-2xl px-8 py-4 font-semibold text-sm md:text-base"
             style={{ color: palette.text }}
           >
             Contacto
