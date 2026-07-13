@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 interface BlurTextProps {
   text: string;
   className?: string;
-  delay?: number; // base delay before the first word starts, in seconds
-  wordDelay?: number; // stagger between words, in seconds
+  delay?: number;
+  wordDelay?: number;
   as?: "h1" | "h2" | "p" | "span";
-  colorOverrides?: Record<number, string>; // word index -> color
+  colorOverrides?: Record<number, string>;
   defaultColor?: string;
+  align?: "center" | "flex-start" | "flex-end";
 }
 
 const wordVariants = {
@@ -29,6 +30,7 @@ export default function BlurText({
   as = "span",
   colorOverrides = {},
   defaultColor,
+  align = "center",
 }: BlurTextProps) {
   const words = text.split(" ");
   const Tag = motion[as];
@@ -39,7 +41,7 @@ export default function BlurText({
       style={{
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "center",
+        justifyContent: align,
         rowGap: "0.1em",
       }}
     >

@@ -33,7 +33,6 @@ export default function Navbar() {
   const lastScroll = useRef(0);
   const light = isLightColor(palette.bg);
 
-  // Hide on scroll down, reveal on scroll up
   useEffect(() => {
     let ticking = false;
 
@@ -66,7 +65,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [open]);
 
-  // Sliding indicator that follows whichever link is hovered
   const moveIndicatorTo = (target: HTMLElement) => {
     const container = linksContainerRef.current;
     const indicator = indicatorRef.current;
@@ -99,6 +97,16 @@ export default function Navbar() {
     }
   };
 
+  // Reinforced glass when compact: heavier blur + higher opacity so any
+  // content passing behind the fixed nav during scroll stays illegible
+  // (industry-standard pattern) instead of half-visible/messy.
+  const navBackground = compact
+    ? light
+      ? "rgba(255,255,255,0.72)"
+      : "rgba(15,15,20,0.72)"
+    : "var(--glass-bg)";
+  const navBlur = compact ? "blur(28px) saturate(180%)" : "blur(20px) saturate(160%)";
+
   return (
     <>
       <div
@@ -107,12 +115,20 @@ export default function Navbar() {
         style={{ paddingTop: compact ? "0.75rem" : "1.5rem" }}
       >
         <nav
-          className="glass rounded-full flex items-center justify-between w-full max-w-3xl transition-[padding] duration-500"
+          className="rounded-full flex items-center justify-between w-full max-w-3xl transition-[padding] duration-500"
           style={{
             paddingLeft: compact ? "1.25rem" : "1.5rem",
             paddingRight: compact ? "0.75rem" : "1rem",
             paddingTop: compact ? "0.5rem" : "0.75rem",
             paddingBottom: compact ? "0.5rem" : "0.75rem",
+            background: navBackground,
+            backdropFilter: navBlur,
+            WebkitBackdropFilter: navBlur,
+            border: `1px solid ${compact ? "var(--glass-border)" : "transparent"}`,
+            boxShadow: compact
+              ? `0 8px 24px var(--glass-shadow), inset 0 1px 0 var(--glass-highlight)`
+              : `inset 0 1px 0 var(--glass-highlight)`,
+            transition: "background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease",
           }}
         >
           <button
@@ -128,13 +144,11 @@ export default function Navbar() {
             style={{ backgroundColor: palette.border, opacity: 0.6 }}
           />
 
-          {/* Desktop links with sliding indicator */}
           <div
             ref={linksContainerRef}
             onMouseLeave={hideIndicator}
             className="hidden md:flex items-center gap-1 px-2 flex-1 justify-center relative"
           >
-            {/* Sliding indicator pill */}
             <div
               ref={indicatorRef}
               className="absolute top-0 left-0 h-full rounded-full pointer-events-none opacity-0"
@@ -148,9 +162,9 @@ export default function Navbar() {
                 key={link.href}
                 onClick={() => goTo(link.href)}
                 onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
+                onFocus={(e) => moveIndicatorTo(e.currentTarget)}
                 className="relative px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors duration-300 whitespace-nowrap z-10"
                 style={{ color: palette.textMuted }}
-                onFocus={(e) => moveIndicatorTo(e.currentTarget)}
               >
                 {link.label}
               </button>
