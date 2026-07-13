@@ -111,10 +111,10 @@ export default function About({ palette }: AboutProps) {
         ref={panelRef}
         className="glass relative z-10 w-full max-w-6xl rounded-[2.5rem] px-6 py-14 md:px-20 md:py-24"
       >
-        <div className="grid md:grid-cols-[320px_1fr] gap-8 md:gap-20 items-center">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8 lg:gap-20 items-center">
           {/* Photo with breathing glow ring + subtle scroll parallax */}
           <div ref={photoRef} data-speed="1.06" className="flex justify-center md:justify-start">
-            <div className="relative w-64 h-64 md:w-80 md:h-80">
+            <div className="relative w-64 h-64 lg:w-80 lg:h-80">
               <div
                 ref={ringRef}
                 className="absolute -inset-2 rounded-full pointer-events-none"
