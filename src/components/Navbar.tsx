@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Menu, X } from "lucide-react";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { usePalette } from "@/context/PaletteContext";
 import { isProgrammaticScroll, scrollToSection } from "@/lib/scrollToSection";
 
@@ -75,14 +74,7 @@ export default function Navbar() {
   }, [open]);
 
   useEffect(() => {
-    const smoother = ScrollSmoother.get();
-    if (open) {
-      smoother?.paused(true);
-      document.body.style.overflow = "hidden";
-    } else {
-      smoother?.paused(false);
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };

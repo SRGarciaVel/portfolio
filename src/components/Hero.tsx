@@ -11,7 +11,7 @@ import { scrollToSection } from "@/lib/scrollToSection";
 
 const STATS = [
   { value: 1, suffix: "+", label: "Año construyendo software en producción" },
-  { value: 5, suffix: "", label: "Proyectos propios desplegados y mantenidos" },
+  { value: 4, suffix: "", label: "Proyectos propios desplegados y mantenidos" },
   { value: 98, suffix: "%", label: "Reducción de tiempo en GestionFactura" },
 ];
 
@@ -155,17 +155,14 @@ export default function Hero() {
     >
       <div ref={blobsRef} className="absolute inset-0 pointer-events-none">
         <div
-          data-speed="0.85"
           className="absolute w-[48vw] h-[48vw] rounded-full blur-[120px] opacity-40 -top-[8%] -left-[10%]"
           style={{ backgroundColor: palette.primary }}
         />
         <div
-          data-speed="1.1"
           className="absolute w-[42vw] h-[42vw] rounded-full blur-[115px] opacity-35 top-[30%] -right-[12%]"
           style={{ backgroundColor: palette.secondary }}
         />
         <div
-          data-speed="0.95"
           className="absolute w-[36vw] h-[36vw] rounded-full blur-[100px] opacity-25 -bottom-[12%] left-[25%]"
           style={{ backgroundColor: palette.accent }}
         />

@@ -1,8 +1,8 @@
 <div align="center">
 
-# Sebastián García — Portfolio
+# Sebastián García · Portfolio
 
-**Portafolio profesional de [Sebastián García Velásquez](https://github.com/SRGarciaVel)** — Desarrollador Full Stack especializado en backend, datos e IA aplicada.
+**Portafolio profesional de [Sebastián García Velásquez](https://github.com/SRGarciaVel)**, Desarrollador Full Stack especializado en backend, datos e IA aplicada.
 
 [![Live Demo](https://img.shields.io/badge/demo-sgdev--portfolio.vercel.app-22d3ee?style=for-the-badge&logo=vercel&logoColor=white)](https://sgdev-portfolio.vercel.app)
 
@@ -20,10 +20,10 @@
 
 Portafolio personal construido con Next.js (App Router) y TypeScript. El fondo y las superficies "glass" del sitio cambian de paleta según la hora del día y la estación del año en Chile, así que nunca se ve exactamente igual dos veces.
 
-- **Server Components por defecto** — la paleta de color se lee del contexto solo donde hay interactividad real, no en el árbol completo de la página.
+- **Server Components por defecto**: la paleta de color se lee del contexto solo donde hay interactividad real, no en el árbol completo de la página.
 - **GSAP** para scroll-reveals, timelines y parallax, respetando `prefers-reduced-motion` en cada animación ambiental.
-- **SEO completo** — metadata, `robots.ts`, `sitemap.ts`, imagen Open Graph generada con `next/og` y structured data (`Person`).
-- **Un solo motor de animación** — sin dependencias de UI redundantes.
+- **SEO completo**: metadata, `robots.ts`, `sitemap.ts`, imagen Open Graph generada con `next/og` y structured data (`Person`).
+- **Un solo motor de animación**: sin dependencias de UI redundantes.
 
 ## Stack
 

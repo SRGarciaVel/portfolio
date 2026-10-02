@@ -133,7 +133,6 @@ export default function Contact() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.9"
         className="absolute w-[45vw] h-[45vw] rounded-full blur-[130px] opacity-35 top-[10%] left-1/2 -translate-x-1/2 pointer-events-none"
         style={{ backgroundColor: palette.primary }}
       />
@@ -219,7 +218,7 @@ export default function Contact() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-pill inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-transform duration-300 hover:scale-105"
+                className="chip inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-transform duration-300 hover:scale-105"
                 style={{ color: palette.text }}
               >
                 <Icon size={16} />

@@ -18,7 +18,7 @@ const EXPERIENCE = [
   },
   {
     period: "Sep 2025 – Dic 2025",
-    title: "GestionFactura — Tesis de Grado",
+    title: "GestionFactura · Tesis de Grado",
     org: "Masisa S.A.",
     description:
       "Diseño e implementación completa de una plataforma de facturación móvil bajo metodología ágil. Pipeline ETL con sincronización a SAP, dashboard de KPIs en tiempo real, autenticación JWT.",
@@ -118,7 +118,6 @@ export default function Experience() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.9"
         className="absolute w-[36vw] h-[36vw] rounded-full blur-[130px] opacity-15 top-[10%] left-[-12%] pointer-events-none"
         style={{ backgroundColor: palette.secondary }}
       />

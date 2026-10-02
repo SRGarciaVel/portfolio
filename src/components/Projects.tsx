@@ -95,19 +95,6 @@ const PROJECTS = [
     github: "https://github.com/SRGarciaVel/fgcdle-game-cl-client",
     private: false,
   },
-  {
-    id: "amadeus",
-    index: "05",
-    title: "Amadeus Replica",
-    subtitle: "Asistente Conversacional con IA Generativa",
-    description:
-      "Agente con memoria semántica vía pgvector, pipeline de voz completo (Whisper STT → LLM → síntesis neural) e integración con avatar Live2D. Construido para entender IA aplicada a nivel de sistema, no solo llamadas a una API.",
-    result: "pgvector · Groq LLM · Whisper STT · Kokoro-ONNX TTS",
-    stack: ["FastAPI", "pgvector", "PostgreSQL", "Python"],
-    variant: "ai" as const,
-    github: null,
-    private: true,
-  },
 ];
 
 function DashboardMock({ palette }: { palette: Palette }) {
@@ -224,58 +211,6 @@ function GameMock({ palette }: { palette: Palette }) {
   );
 }
 
-function AIMock({ palette }: { palette: Palette }) {
-  const ringsRef = useRef<HTMLDivElement>(null);
-  const tweensRef = useRef<gsap.core.Tween[]>([]);
-  const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
-
-  useEffect(() => {
-    if (!ringsRef.current) return;
-    const rings = Array.from(ringsRef.current.children);
-    tweensRef.current = rings.map((ring, i) =>
-      gsap.to(ring, {
-        scale: 1.6,
-        opacity: 0,
-        duration: 2.4,
-        repeat: -1,
-        delay: i * 0.6,
-        ease: "power1.out",
-        paused: true,
-      })
-    );
-    return () => tweensRef.current.forEach((t) => t.kill());
-  }, []);
-
-  useEffect(() => {
-    tweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
-  }, [inView]);
-
-  return (
-    <div ref={viewRef} className="w-full h-full flex items-center justify-center p-6">
-      <div className="relative w-32 h-32 flex items-center justify-center">
-        <div ref={ringsRef} className="absolute inset-0">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="absolute inset-0 rounded-full border-2"
-              style={{ borderColor: palette.primary, opacity: 0.5 }}
-            />
-          ))}
-        </div>
-        <div
-          className="w-14 h-14 rounded-full chip flex items-center justify-center"
-          style={{ boxShadow: `0 0 40px ${palette.glow}` }}
-        >
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: palette.primary }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /** Alternating character-ban grid, echoing TDF Random Select's actual draft
  *  flow: cells dim one by one, then the last one left lights up as the
  *  random pick, before the cycle resets. */
@@ -332,7 +267,6 @@ function DraftMock({ palette }: { palette: Palette }) {
 const MOCKS = {
   dashboard: DashboardMock,
   game: GameMock,
-  ai: AIMock,
   draft: DraftMock,
 };
 
@@ -383,7 +317,6 @@ export default function Projects() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.92"
         className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
         style={{ backgroundColor: palette.primary }}
       />
