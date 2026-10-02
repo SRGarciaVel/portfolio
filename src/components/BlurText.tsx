@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 interface BlurTextProps {
   text: string;
@@ -13,15 +14,6 @@ interface BlurTextProps {
   align?: "center" | "flex-start" | "flex-end";
 }
 
-const wordVariants = {
-  hidden: { filter: "blur(10px)", opacity: 0, y: 30 },
-  visible: {
-    filter: ["blur(10px)", "blur(4px)", "blur(0px)"],
-    opacity: [0, 0.6, 1],
-    y: [30, -4, 0],
-  },
-};
-
 export default function BlurText({
   text,
   className = "",
@@ -32,11 +24,37 @@ export default function BlurText({
   defaultColor,
   align = "center",
 }: BlurTextProps) {
+  const containerRef = useRef<HTMLElement>(null);
   const words = text.split(" ");
-  const Tag = motion[as];
+  const Tag = as;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const spans = Array.from(el.children) as HTMLElement[];
+
+    const tween = gsap.fromTo(
+      spans,
+      { filter: "blur(10px)", opacity: 0, y: 30 },
+      {
+        filter: "blur(0px)",
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "power2.out",
+        stagger: wordDelay,
+        delay,
+      }
+    );
+
+    return () => {
+      tween.kill();
+    };
+  }, [text, delay, wordDelay]);
 
   return (
     <Tag
+      ref={containerRef as React.Ref<never>}
       className={className}
       style={{
         display: "flex",
@@ -46,17 +64,8 @@ export default function BlurText({
       }}
     >
       {words.map((word, i) => (
-        <motion.span
+        <span
           key={`${word}-${i}`}
-          initial="hidden"
-          animate="visible"
-          variants={wordVariants}
-          transition={{
-            duration: 0.7,
-            times: [0, 0.5, 1],
-            ease: "easeOut",
-            delay: delay + i * wordDelay,
-          }}
           style={{
             display: "inline-block",
             marginRight: "0.28em",
@@ -64,7 +73,7 @@ export default function BlurText({
           }}
         >
           {word}
-        </motion.span>
+        </span>
       ))}
     </Tag>
   );

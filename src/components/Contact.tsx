@@ -5,13 +5,10 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BlurText from "./BlurText";
 import { useMagnetic } from "@/hooks/useMagnetic";
-import type { Palette } from "@/lib/colorSystem";
+import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface ContactProps {
-  palette: Palette;
-}
 
 function isLightColor(hex: string): boolean {
   const c = hex.replace("#", "");
@@ -61,7 +58,8 @@ const LINKS = [
   },
 ];
 
-export default function Contact({ palette }: ContactProps) {
+export default function Contact() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -113,7 +111,7 @@ export default function Contact({ palette }: ContactProps) {
   }, []);
 
   useEffect(() => {
-    if (!glowRef.current) return;
+    if (!glowRef.current || prefersReducedMotion()) return;
     const tween = gsap.to(glowRef.current, {
       scale: 1.25,
       opacity: 0.55,

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { gsap } from "gsap";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 
 /** Attaches a magnetic pull effect: the element drifts toward the cursor
  *  within its own bounds, then eases back to rest on mouse leave. */
@@ -11,7 +12,7 @@ export function useMagnetic(
 ) {
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || prefersReducedMotion()) return;
 
     const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });
     const yTo = gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" });

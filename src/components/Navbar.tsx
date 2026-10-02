@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { Menu, X } from "lucide-react";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { usePalette } from "@/context/PaletteContext";
+import { isProgrammaticScroll, scrollToSection } from "@/lib/scrollToSection";
 
 const LINKS = [
   { href: "#sobre-mi", label: "Sobre mí" },
@@ -47,7 +48,7 @@ export default function Navbar() {
         return;
       }
 
-      const goingDown = delta > 0 && current > 120;
+      const goingDown = delta > 0 && current > 120 && !isProgrammaticScroll();
       setCompact(current > 40);
 
       if (navRef.current) {
@@ -141,12 +142,7 @@ export default function Navbar() {
 
   const goTo = (href: string) => {
     setOpen(false);
-    const smoother = ScrollSmoother.get();
-    if (smoother) {
-      smoother.scrollTo(href, true, "top top");
-    } else {
-      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToSection(href);
   };
 
   const opaqueBg = light ? "rgba(255,255,255,0.96)" : "rgba(12,12,16,0.96)";

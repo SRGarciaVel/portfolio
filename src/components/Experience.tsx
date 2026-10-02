@@ -3,13 +3,9 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import type { Palette } from "@/lib/colorSystem";
+import { usePalette } from "@/context/PaletteContext";
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface ExperienceProps {
-  palette: Palette;
-}
 
 const EXPERIENCE = [
   {
@@ -39,7 +35,8 @@ const EXPERIENCE = [
   },
 ];
 
-export default function Experience({ palette }: ExperienceProps) {
+export default function Experience() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);

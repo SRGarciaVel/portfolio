@@ -3,13 +3,10 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import type { Palette } from "@/lib/colorSystem";
+import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface SkillsProps {
-  palette: Palette;
-}
 
 const CATEGORIES = [
   {
@@ -41,7 +38,7 @@ function TiltCard({ children, index }: { children: React.ReactNode; index: numbe
 
   useEffect(() => {
     const card = cardRef.current;
-    if (!card) return;
+    if (!card || prefersReducedMotion()) return;
 
     const rotateX = gsap.quickTo(card, "rotationX", { duration: 0.4, ease: "power3.out" });
     const rotateY = gsap.quickTo(card, "rotationY", { duration: 0.4, ease: "power3.out" });
@@ -84,7 +81,8 @@ function TiltCard({ children, index }: { children: React.ReactNode; index: numbe
   );
 }
 
-export default function Skills({ palette }: SkillsProps) {
+export default function Skills() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
