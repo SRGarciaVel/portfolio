@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
+import { usePalette } from "@/context/PaletteContext";
 import type { Palette } from "@/lib/colorSystem";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -40,10 +41,6 @@ function LockIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-interface ProjectsProps {
-  palette: Palette;
-}
-
 const PROJECTS = [
   {
     id: "gestionfactura",
@@ -68,7 +65,7 @@ const PROJECTS = [
     result: "En producción · Cloudflare R2 · Supabase · Vercel",
     stack: ["FastAPI", "React", "Vite", "Tailwind", "Supabase"],
     variant: "game" as const,
-    github: "https://github.com/SRGarciaVel",
+    github: "https://github.com/SRGarciaVel/fgcdle-game-cl-client",
     private: false,
   },
   {
@@ -81,8 +78,8 @@ const PROJECTS = [
     result: "pgvector · Groq LLM · Whisper STT · Kokoro-ONNX TTS",
     stack: ["FastAPI", "pgvector", "PostgreSQL", "Python"],
     variant: "ai" as const,
-    github: "https://github.com/SRGarciaVel",
-    private: false,
+    github: null,
+    private: true,
   },
 ];
 
@@ -258,7 +255,8 @@ const MOCKS = {
   ai: AIMock,
 };
 
-export default function Projects({ palette }: ProjectsProps) {
+export default function Projects() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -277,9 +275,8 @@ export default function Projects({ palette }: ProjectsProps) {
         }
       );
 
-      rowRefs.current.forEach((row, i) => {
+      rowRefs.current.forEach((row) => {
         if (!row) return;
-        const fromX = i % 2 === 0 ? -40 : 40;
         gsap.fromTo(
           row,
           { y: 50, opacity: 0 },
@@ -291,7 +288,6 @@ export default function Projects({ palette }: ProjectsProps) {
             scrollTrigger: { trigger: row, start: "top 80%" },
           }
         );
-        void fromX;
       });
     }, sectionRef);
 

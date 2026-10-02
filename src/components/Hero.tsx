@@ -2,15 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
 import BlurText from "./BlurText";
 import { useInView } from "@/hooks/useInView";
 import { useMagnetic } from "@/hooks/useMagnetic";
-import type { Palette } from "@/lib/colorSystem";
-
-interface HeroProps {
-  palette: Palette;
-}
+import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const STATS = [
   { value: 1, suffix: "+", label: "Año construyendo software en producción" },
@@ -26,19 +23,8 @@ function isLightColor(hex: string): boolean {
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6;
 }
 
-/** Same navigation mechanism as the Navbar: goes through ScrollSmoother
- *  instead of a native anchor jump, which would otherwise desync
- *  ScrollSmoother's virtual scroll position and lock up further scrolling. */
-function scrollToSection(href: string) {
-  const smoother = ScrollSmoother.get();
-  if (smoother) {
-    smoother.scrollTo(href, true, "top top");
-  } else {
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-  }
-}
-
-export default function Hero({ palette }: HeroProps) {
+export default function Hero() {
+  const palette = usePalette();
   const panelRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -59,7 +45,7 @@ export default function Hero({ palette }: HeroProps) {
   const blobTweensRef = useRef<gsap.core.Tween[]>([]);
 
   useEffect(() => {
-    if (!blobsRef.current) return;
+    if (!blobsRef.current || prefersReducedMotion()) return;
     const blobs = blobsRef.current.children;
 
     blobTweensRef.current = Array.from(blobs).map((blob, i) =>
@@ -133,7 +119,7 @@ export default function Hero({ palette }: HeroProps) {
   }, []);
 
   useEffect(() => {
-    if (!glowRef.current) return;
+    if (!glowRef.current || prefersReducedMotion()) return;
     const tween = gsap.to(glowRef.current, {
       scale: 1.25,
       opacity: 0.55,
@@ -151,7 +137,11 @@ export default function Hero({ palette }: HeroProps) {
 
   useEffect(() => {
     if (glowTweenRef.current) {
-      inView ? glowTweenRef.current.play() : glowTweenRef.current.pause();
+      if (inView) {
+        glowTweenRef.current.play();
+      } else {
+        glowTweenRef.current.pause();
+      }
     }
     blobTweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
   }, [inView]);

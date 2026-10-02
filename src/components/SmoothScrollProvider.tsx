@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -13,13 +14,9 @@ export default function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const smootherRef = useRef<ScrollSmoother | null>(null);
-  const [smootherActive, setSmootherActive] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
     // Touch devices (phones/tablets) get native scroll instead of
     // ScrollSmoother. Virtualized smoothing on touch competes with the
     // browser's own momentum scroll and is a common source of jank on
@@ -30,7 +27,7 @@ export default function SmoothScrollProvider({
     // etc. keep working exactly the same.
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
-    if (isTouchDevice || prefersReduced) {
+    if (isTouchDevice || prefersReducedMotion()) {
       return;
     }
 
@@ -41,7 +38,7 @@ export default function SmoothScrollProvider({
       effects: true,
       normalizeScroll: true,
     });
-    setSmootherActive(true);
+    wrapperRef.current?.classList.add("gsap-smooth-active");
 
     return () => {
       smootherRef.current?.kill();
@@ -49,7 +46,7 @@ export default function SmoothScrollProvider({
   }, []);
 
   return (
-    <div id="smooth-wrapper" className={smootherActive ? "gsap-smooth-active" : ""}>
+    <div id="smooth-wrapper" ref={wrapperRef}>
       <div id="smooth-content">{children}</div>
     </div>
   );

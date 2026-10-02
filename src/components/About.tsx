@@ -5,15 +5,13 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useInView } from "@/hooks/useInView";
-import type { Palette } from "@/lib/colorSystem";
+import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface AboutProps {
-  palette: Palette;
-}
-
-export default function About({ palette }: AboutProps) {
+export default function About() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const photoRef = useRef<HTMLDivElement>(null);
@@ -66,7 +64,7 @@ export default function About({ palette }: AboutProps) {
 
   // Breathing glow ring around the photo — echoes the Hero CTA glow for consistency
   useEffect(() => {
-    if (!ringRef.current) return;
+    if (!ringRef.current || prefersReducedMotion()) return;
     const tween = gsap.to(ringRef.current, {
       scale: 1.08,
       opacity: 0.5,

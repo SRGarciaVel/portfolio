@@ -3,13 +3,10 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePalette } from "@/context/PaletteContext";
 import type { Palette } from "@/lib/colorSystem";
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface CertificationsProps {
-  palette: Palette;
-}
 
 const CREDENTIALS = [
   {
@@ -99,7 +96,8 @@ function CredentialCard({
   );
 }
 
-export default function Certifications({ palette }: CertificationsProps) {
+export default function Certifications() {
+  const palette = usePalette();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
