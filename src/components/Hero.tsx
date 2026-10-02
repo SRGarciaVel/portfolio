@@ -11,7 +11,7 @@ import { scrollToSection } from "@/lib/scrollToSection";
 
 const STATS = [
   { value: 1, suffix: "+", label: "Año construyendo software en producción" },
-  { value: 3, suffix: "", label: "Proyectos propios desplegados y mantenidos" },
+  { value: 5, suffix: "", label: "Proyectos propios desplegados y mantenidos" },
   { value: 98, suffix: "%", label: "Reducción de tiempo en GestionFactura" },
 ];
 

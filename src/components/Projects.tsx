@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 import type { Palette } from "@/lib/colorSystem";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -56,8 +57,34 @@ const PROJECTS = [
     private: true,
   },
   {
-    id: "fgcdle",
+    id: "tdf-edeportes",
     index: "02",
+    title: "TDF e-deportes",
+    subtitle: "Plataforma de Organización y Comunidad para Esports",
+    description:
+      "Plataforma completa para un club de esports de Street Fighter 6: autenticación con Twitch OAuth, perfiles de jugador con estadísticas reales obtenidas por scraping automatizado del perfil oficial de Capcom, tier list de la comunidad y panel de administración para el staff.",
+    result: "Scraping automatizado vía GitHub Actions · Twitch OAuth · En producción",
+    stack: ["FastAPI", "React", "PostgreSQL", "Supabase", "Playwright", "Twitch OAuth"],
+    variant: "dashboard" as const,
+    github: "https://github.com/SRGarciaVel/tdf-edeportes",
+    private: false,
+  },
+  {
+    id: "tdf-random-select",
+    index: "03",
+    title: "TDF Random Select",
+    subtitle: "Draft de Torneo con Overlay en Vivo para OBS",
+    description:
+      "Herramienta de escritorio para Windows que arma el draft de selección random de personaje en torneos: baneo alternado sobre una grilla compartida, asignación random del personaje final y overlay integrado a OBS Studio vía WebSocket, sin depender de la web del club para funcionar durante el stream.",
+    result: "Integración nativa con OBS · 100% local, sin backend externo",
+    stack: ["Python", "PyQt6", "Flask", "Socket.IO", "React", "OBS WebSocket"],
+    variant: "draft" as const,
+    github: "https://github.com/SRGarciaVel/tdf-random-select",
+    private: false,
+  },
+  {
+    id: "fgcdle",
+    index: "04",
     title: "FGCdle",
     subtitle: "Quiz Musical sobre Soundtracks de Videojuegos",
     description:
@@ -70,7 +97,7 @@ const PROJECTS = [
   },
   {
     id: "amadeus",
-    index: "03",
+    index: "05",
     title: "Amadeus Replica",
     subtitle: "Asistente Conversacional con IA Generativa",
     description:
@@ -249,10 +276,64 @@ function AIMock({ palette }: { palette: Palette }) {
   );
 }
 
+/** Alternating character-ban grid, echoing TDF Random Select's actual draft
+ *  flow: cells dim one by one, then the last one left lights up as the
+ *  random pick, before the cycle resets. */
+function DraftMock({ palette }: { palette: Palette }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
+
+  useEffect(() => {
+    if (!gridRef.current || prefersReducedMotion()) return;
+    const cells = Array.from(gridRef.current.children);
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8, paused: true });
+
+    cells.slice(0, -1).forEach((cell, i) => {
+      tl.to(cell, { opacity: 0.15, scale: 0.85, duration: 0.3, ease: "power2.out" }, i * 0.2);
+    });
+    tl.to(
+      cells[cells.length - 1],
+      { scale: 1.15, borderColor: palette.primary, duration: 0.4, ease: "back.out(2)" },
+      "+=0.1"
+    );
+    tl.to(cells, { opacity: 1, scale: 1, borderColor: palette.border, duration: 0.3 }, "+=1");
+
+    tlRef.current = tl;
+    return () => {
+      tl.kill();
+    };
+  }, [palette.primary, palette.border]);
+
+  useEffect(() => {
+    if (!tlRef.current) return;
+    if (inView) {
+      tlRef.current.play();
+    } else {
+      tlRef.current.pause();
+    }
+  }, [inView]);
+
+  return (
+    <div ref={viewRef} className="w-full h-full flex items-center justify-center p-6">
+      <div ref={gridRef} className="grid grid-cols-4 gap-2.5">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-9 h-9 rounded-lg chip"
+            style={{ border: `1.5px solid ${palette.border}` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const MOCKS = {
   dashboard: DashboardMock,
   game: GameMock,
   ai: AIMock,
+  draft: DraftMock,
 };
 
 export default function Projects() {
