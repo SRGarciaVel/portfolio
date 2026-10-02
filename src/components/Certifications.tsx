@@ -22,7 +22,7 @@ const CREDENTIALS = [
   {
     id: "ubb",
     title: "Ingeniería de Ejecución en Computación e Informática",
-    subtitle: "Universidad del Bío-Bío — Concepción, Chile",
+    subtitle: "Universidad del Bío-Bío, Concepción, Chile",
     issuer: "Universidad del Bío-Bío",
     status: "Tesis aprobada Dic 2025 · Titulación estimada Ago–Dic 2026",
     icon: (
@@ -141,7 +141,6 @@ export default function Certifications() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.95"
         className="absolute w-[34vw] h-[34vw] rounded-full blur-[130px] opacity-15 bottom-[5%] right-[-10%] pointer-events-none"
         style={{ backgroundColor: palette.accent }}
       />

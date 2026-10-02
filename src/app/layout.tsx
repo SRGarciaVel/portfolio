@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { PaletteProvider } from "@/context/PaletteContext";
-import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
@@ -16,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = "https://sgdev-portfolio.vercel.app";
-const title = "Sebastián García — Desarrollador Full Stack";
+const title = "Sebastián García · Desarrollador Full Stack";
 const description =
   "Portafolio de Sebastián García Velásquez. Ingeniero Informático, Full Stack Developer especializado en Python, React, PostgreSQL e IA aplicada.";
 
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: title,
-    template: "%s — Sebastián García",
+    template: "%s · Sebastián García",
   },
   description,
   keywords: [
@@ -45,7 +44,7 @@ export const metadata: Metadata = {
     description:
       "Portafolio interactivo con paleta de colores dinámica según hora y estación.",
     url: siteUrl,
-    siteName: "Sebastián García — Portafolio",
+    siteName: "Sebastián García · Portafolio",
     locale: "es_CL",
     type: "website",
   },
@@ -103,7 +102,7 @@ export default function RootLayout({
         />
         <PaletteProvider>
           <Navbar />
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          {children}
         </PaletteProvider>
       </body>
     </html>

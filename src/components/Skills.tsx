@@ -127,7 +127,6 @@ export default function Skills() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.9"
         className="absolute w-[35vw] h-[35vw] rounded-full blur-[130px] opacity-20 top-[5%] left-[-10%] pointer-events-none"
         style={{ backgroundColor: palette.accent }}
       />

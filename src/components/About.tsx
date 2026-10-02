@@ -100,7 +100,6 @@ export default function About() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.9"
         className="absolute w-[40vw] h-[40vw] rounded-full blur-[130px] opacity-20 top-[10%] right-[-10%] pointer-events-none"
         style={{ backgroundColor: palette.secondary }}
       />
@@ -110,8 +109,8 @@ export default function About() {
         className="glass relative z-10 w-full max-w-6xl rounded-[2.5rem] px-6 py-14 md:px-20 md:py-24"
       >
         <div className="grid lg:grid-cols-[320px_1fr] gap-8 lg:gap-20 items-center">
-          {/* Photo with breathing glow ring + subtle scroll parallax */}
-          <div ref={photoRef} data-speed="1.06" className="flex justify-center md:justify-start">
+          {/* Photo with breathing glow ring */}
+          <div ref={photoRef} className="flex justify-center md:justify-start">
             <div className="relative w-64 h-64 lg:w-80 lg:h-80">
               <div
                 ref={ringRef}
@@ -162,9 +161,9 @@ export default function About() {
             >
               Soy Ingeniero Informático egresado de la Universidad del Bío-Bío,
               especializado en desarrollo Full Stack con foco en backend, datos
-              e integración de sistemas. Mi trabajo en Masisa S.A. —donde
+              e integración de sistemas. Mi trabajo en Masisa S.A. (donde
               diseñé un sistema de facturación con integración SAP que redujo
-              el tiempo de procesamiento en un 98%— refleja cómo entiendo el
+              el tiempo de procesamiento en un 98%) refleja cómo entiendo el
               desarrollo: no como código aislado, sino como una herramienta
               para resolver fricciones concretas en procesos reales.
             </p>

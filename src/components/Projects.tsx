@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 import { usePalette } from "@/context/PaletteContext";
+import { prefersReducedMotion } from "@/lib/motionPrefs";
 import type { Palette } from "@/lib/colorSystem";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -56,8 +57,34 @@ const PROJECTS = [
     private: true,
   },
   {
-    id: "fgcdle",
+    id: "tdf-edeportes",
     index: "02",
+    title: "TDF e-deportes",
+    subtitle: "Plataforma de Organización y Comunidad para Esports",
+    description:
+      "Plataforma completa para un club de esports de Street Fighter 6: autenticación con Twitch OAuth, perfiles de jugador con estadísticas reales obtenidas por scraping automatizado del perfil oficial de Capcom, tier list de la comunidad y panel de administración para el staff.",
+    result: "Scraping automatizado vía GitHub Actions · Twitch OAuth · En producción",
+    stack: ["FastAPI", "React", "PostgreSQL", "Supabase", "Playwright", "Twitch OAuth"],
+    variant: "dashboard" as const,
+    github: "https://github.com/SRGarciaVel/tdf-edeportes",
+    private: false,
+  },
+  {
+    id: "tdf-random-select",
+    index: "03",
+    title: "TDF Random Select",
+    subtitle: "Draft de Torneo con Overlay en Vivo para OBS",
+    description:
+      "Herramienta de escritorio para Windows que arma el draft de selección random de personaje en torneos: baneo alternado sobre una grilla compartida, asignación random del personaje final y overlay integrado a OBS Studio vía WebSocket, sin depender de la web del club para funcionar durante el stream.",
+    result: "Integración nativa con OBS · 100% local, sin backend externo",
+    stack: ["Python", "PyQt6", "Flask", "Socket.IO", "React", "OBS WebSocket"],
+    variant: "draft" as const,
+    github: "https://github.com/SRGarciaVel/tdf-random-select",
+    private: false,
+  },
+  {
+    id: "fgcdle",
+    index: "04",
     title: "FGCdle",
     subtitle: "Quiz Musical sobre Soundtracks de Videojuegos",
     description:
@@ -67,19 +94,6 @@ const PROJECTS = [
     variant: "game" as const,
     github: "https://github.com/SRGarciaVel/fgcdle-game-cl-client",
     private: false,
-  },
-  {
-    id: "amadeus",
-    index: "03",
-    title: "Amadeus Replica",
-    subtitle: "Asistente Conversacional con IA Generativa",
-    description:
-      "Agente con memoria semántica vía pgvector, pipeline de voz completo (Whisper STT → LLM → síntesis neural) e integración con avatar Live2D. Construido para entender IA aplicada a nivel de sistema, no solo llamadas a una API.",
-    result: "pgvector · Groq LLM · Whisper STT · Kokoro-ONNX TTS",
-    stack: ["FastAPI", "pgvector", "PostgreSQL", "Python"],
-    variant: "ai" as const,
-    github: null,
-    private: true,
   },
 ];
 
@@ -197,53 +211,54 @@ function GameMock({ palette }: { palette: Palette }) {
   );
 }
 
-function AIMock({ palette }: { palette: Palette }) {
-  const ringsRef = useRef<HTMLDivElement>(null);
-  const tweensRef = useRef<gsap.core.Tween[]>([]);
+/** Alternating character-ban grid, echoing TDF Random Select's actual draft
+ *  flow: cells dim one by one, then the last one left lights up as the
+ *  random pick, before the cycle resets. */
+function DraftMock({ palette }: { palette: Palette }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
   const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
 
   useEffect(() => {
-    if (!ringsRef.current) return;
-    const rings = Array.from(ringsRef.current.children);
-    tweensRef.current = rings.map((ring, i) =>
-      gsap.to(ring, {
-        scale: 1.6,
-        opacity: 0,
-        duration: 2.4,
-        repeat: -1,
-        delay: i * 0.6,
-        ease: "power1.out",
-        paused: true,
-      })
+    if (!gridRef.current || prefersReducedMotion()) return;
+    const cells = Array.from(gridRef.current.children);
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8, paused: true });
+
+    cells.slice(0, -1).forEach((cell, i) => {
+      tl.to(cell, { opacity: 0.15, scale: 0.85, duration: 0.3, ease: "power2.out" }, i * 0.2);
+    });
+    tl.to(
+      cells[cells.length - 1],
+      { scale: 1.15, borderColor: palette.primary, duration: 0.4, ease: "back.out(2)" },
+      "+=0.1"
     );
-    return () => tweensRef.current.forEach((t) => t.kill());
-  }, []);
+    tl.to(cells, { opacity: 1, scale: 1, borderColor: palette.border, duration: 0.3 }, "+=1");
+
+    tlRef.current = tl;
+    return () => {
+      tl.kill();
+    };
+  }, [palette.primary, palette.border]);
 
   useEffect(() => {
-    tweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
+    if (!tlRef.current) return;
+    if (inView) {
+      tlRef.current.play();
+    } else {
+      tlRef.current.pause();
+    }
   }, [inView]);
 
   return (
     <div ref={viewRef} className="w-full h-full flex items-center justify-center p-6">
-      <div className="relative w-32 h-32 flex items-center justify-center">
-        <div ref={ringsRef} className="absolute inset-0">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="absolute inset-0 rounded-full border-2"
-              style={{ borderColor: palette.primary, opacity: 0.5 }}
-            />
-          ))}
-        </div>
-        <div
-          className="w-14 h-14 rounded-full chip flex items-center justify-center"
-          style={{ boxShadow: `0 0 40px ${palette.glow}` }}
-        >
+      <div ref={gridRef} className="grid grid-cols-4 gap-2.5">
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: palette.primary }}
+            key={i}
+            className="w-9 h-9 rounded-lg chip"
+            style={{ border: `1.5px solid ${palette.border}` }}
           />
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -252,7 +267,7 @@ function AIMock({ palette }: { palette: Palette }) {
 const MOCKS = {
   dashboard: DashboardMock,
   game: GameMock,
-  ai: AIMock,
+  draft: DraftMock,
 };
 
 export default function Projects() {
@@ -302,7 +317,6 @@ export default function Projects() {
       style={{ backgroundColor: palette.bg }}
     >
       <div
-        data-speed="0.92"
         className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
         style={{ backgroundColor: palette.primary }}
       />
