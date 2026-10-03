@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { usePalette } from "@/context/PaletteContext";
 import { useActiveSlide } from "@/hooks/useActiveSlide";
 import { SLIDE_PALETTES } from "@/lib/slidePalettes";
@@ -37,7 +37,28 @@ export default function Navbar() {
   const mobileWrapRef = useRef<HTMLDivElement>(null);
   const mobileInnerRef = useRef<HTMLDivElement>(null);
   const lastScroll = useRef(0);
+  const [scrolledAway, setScrolledAway] = useState(false);
+  const [peek, setPeek] = useState(false);
   const light = isLightColor(palette.bg);
+
+  useEffect(() => {
+    if (!navRef.current) return;
+    const hidden = scrolledAway && !peek && !open;
+    gsap.to(navRef.current, {
+      y: hidden ? -100 : 0,
+      duration: 0.5,
+      ease: "power3.out",
+    });
+  }, [scrolledAway, peek, open]);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (e.clientY < 72) setPeek(true);
+      else if (e.clientY > 120) setPeek(false);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -53,14 +74,8 @@ export default function Navbar() {
 
       const goingDown = delta > 0 && current > 120 && !isProgrammaticScroll();
       setCompact(current > 40);
-
-      if (navRef.current) {
-        gsap.to(navRef.current, {
-          y: goingDown && !open ? -100 : 0,
-          duration: 0.5,
-          ease: "power3.out",
-        });
-      }
+      setScrolledAway(goingDown);
+      setPeek(false);
 
       lastScroll.current = current;
       ticking = false;
@@ -163,6 +178,10 @@ export default function Navbar() {
         ref={navRef}
         className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4"
         style={{ paddingTop: compact && !open ? "0.75rem" : "1.5rem" }}
+        onMouseLeave={() => {
+          if (!open) setPeek(false);
+        }}
+        onFocus={() => setPeek(true)}
       >
         {/* Single unified shape: pill when closed, panel when open.
             Both header row and mobile list live inside this ONE element,
@@ -282,6 +301,19 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {scrolledAway && !peek && !open && (
+        <button
+          type="button"
+          onClick={() => setPeek(true)}
+          onMouseEnter={() => setPeek(true)}
+          aria-label="Mostrar navegación"
+          className="fixed top-2 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-14 h-6 rounded-full chip"
+          style={{ color: palette.textMuted }}
+        >
+          <ChevronDown size={16} />
+        </button>
+      )}
 
       {open && (
         <div

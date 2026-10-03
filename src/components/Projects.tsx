@@ -7,6 +7,17 @@ import { ExternalLink } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 import { usePalette } from "@/context/PaletteContext";
 import Panel from "@/components/Panel";
+import Image from "next/image";
+
+type ProjectImage = { src: string; alt: string };
+
+/** Real screenshots replace the abstract mockup for projects that have one. */
+const PROJECT_IMAGES: Partial<Record<string, ProjectImage>> = {
+  "tdf-edeportes": {
+    src: "/projects/tdf-edeportes.webp",
+    alt: "Página principal de TDF e-deportes",
+  },
+};
 import { prefersReducedMotion } from "@/lib/motionPrefs";
 import type { Palette } from "@/lib/colorSystem";
 
@@ -281,6 +292,7 @@ function ProjectSlide({ project, index }: { project: Project; index: number }) {
   const headerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const Mock = MOCKS[project.variant];
+  const image = PROJECT_IMAGES[project.id];
   const imageFirst = index % 2 === 0;
 
   useEffect(() => {
@@ -356,7 +368,11 @@ function ProjectSlide({ project, index }: { project: Project; index: number }) {
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
               </div>
               <div className="absolute inset-0 top-9">
-                <Mock palette={palette} />
+                {image ? (
+                  <Image src={image.src} alt={image.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
+                ) : (
+                  <Mock palette={palette} />
+                )}
               </div>
             </div>
           </div>
