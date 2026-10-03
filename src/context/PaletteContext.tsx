@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect } from "react";
 import { useLivePalette } from "@/hooks/useLivePalette";
 import type { Palette } from "@/lib/colorSystem";
 
-const PaletteContext = createContext<Palette | null>(null);
+export const PaletteContext = createContext<Palette | null>(null);
 
 function isLightColor(hex: string): boolean {
   const c = hex.replace("#", "");
