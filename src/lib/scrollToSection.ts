@@ -8,10 +8,17 @@ export function isProgrammaticScroll(): boolean {
   return Date.now() < programmaticScrollUntil;
 }
 
-/** Scrolls to a section via native smooth scrolling. Used by both the
- *  Navbar links and the Hero/Contact CTA buttons so they share one
- *  mechanism instead of each re-implementing it. */
+/** Scrolls to a section. Used by both the Navbar links and the Hero/Contact
+ *  CTA buttons. Sticky desktop panels can't use scrollIntoView (they already
+ *  sit at the top of the viewport), so their offset comes from their index. */
 export function scrollToSection(href: string) {
-  programmaticScrollUntil = Date.now() + 1200;
-  document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  programmaticScrollUntil = Date.now() + 2200;
+  const el = document.querySelector<HTMLElement>(href);
+  if (!el) return;
+  if (getComputedStyle(el).position === "sticky") {
+    const index = Array.from(document.querySelectorAll(".panel")).indexOf(el);
+    window.scrollTo({ top: index * window.innerHeight, behavior: "smooth" });
+    return;
+  }
+  el.scrollIntoView({ behavior: "smooth" });
 }

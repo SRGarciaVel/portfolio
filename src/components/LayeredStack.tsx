@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { useLayeredPins } from "@/hooks/useLayeredPins";
 import { setActiveSlide } from "@/hooks/useActiveSlide";
+import { useSlideSnap } from "@/hooks/useSlideSnap";
 
 export default function LayeredStack({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  useLayeredPins(ref);
-
+  useSlideSnap(ref);
   useEffect(() => {
     const container = ref.current;
     if (!container) return;

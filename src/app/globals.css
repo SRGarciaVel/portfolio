@@ -187,6 +187,13 @@ body {
   }
 }
 
+@media (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .panel {
+    position: sticky;
+    top: 0;
+  }
+}
+
 /* ─────────────────────────────────────────
    MOBILE PERFORMANCE
    Lighter blur radii on phones: backdrop-filter is one of the most
