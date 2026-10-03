@@ -19,7 +19,7 @@ export function useLayeredPins(containerRef: RefObject<HTMLElement | null>) {
     const container = containerRef.current;
     if (!container || !window.matchMedia(LAYERED_QUERY).matches) return;
 
-    const panels = gsap.utils.toArray<HTMLElement>(":scope > .panel", container);
+    const panels = gsap.utils.toArray<HTMLElement>(".panel", container);
     if (panels.length < 2) return;
 
     const ctx = gsap.context(() => {

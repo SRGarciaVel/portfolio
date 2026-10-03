@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Menu, X } from "lucide-react";
 import { usePalette } from "@/context/PaletteContext";
+import { useActiveSlide } from "@/hooks/useActiveSlide";
+import { SLIDE_PALETTES } from "@/lib/slidePalettes";
 import { isProgrammaticScroll, scrollToSection } from "@/lib/scrollToSection";
 
 const LINKS = [
@@ -24,7 +26,9 @@ function isLightColor(hex: string): boolean {
 }
 
 export default function Navbar() {
-  const palette = usePalette();
+  const globalPalette = usePalette();
+  const activeSlide = useActiveSlide();
+  const palette = { ...SLIDE_PALETTES[activeSlide % SLIDE_PALETTES.length], timeLabel: globalPalette.timeLabel, seasonLabel: globalPalette.seasonLabel };
   const [open, setOpen] = useState(false);
   const [compact, setCompact] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
