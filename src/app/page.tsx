@@ -10,7 +10,7 @@ import Panel from "@/components/Panel";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
+    <main className="relative min-h-screen overflow-x-clip">
       <LayeredStack>
         <Panel index={0}><Hero /></Panel>
         <Panel index={1}><About /></Panel>
