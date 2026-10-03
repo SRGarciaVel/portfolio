@@ -14,11 +14,11 @@ export default function Home() {
       <LayeredStack>
         <Panel index={0}><Hero /></Panel>
         <Panel index={1}><About /></Panel>
-        <Panel index={2}><Experience /></Panel>
-        <Panel index={3}><Projects /></Panel>
-        <Panel index={4}><Skills /></Panel>
-        <Panel index={5}><Certifications /></Panel>
-        <Panel index={6}><Contact /></Panel>
+        <Experience />
+        <Projects />
+        <Panel index={9}><Skills /></Panel>
+        <Panel index={10}><Certifications /></Panel>
+        <Panel index={11}><Contact /></Panel>
       </LayeredStack>
     </main>
   );

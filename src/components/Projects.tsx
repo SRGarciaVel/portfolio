@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 import { usePalette } from "@/context/PaletteContext";
+import Panel from "@/components/Panel";
 import { prefersReducedMotion } from "@/lib/motionPrefs";
 import type { Palette } from "@/lib/colorSystem";
 
@@ -270,175 +271,157 @@ const MOCKS = {
   draft: DraftMock,
 };
 
-export default function Projects() {
+const FIRST_SLIDE_INDEX = 5;
+
+type Project = (typeof PROJECTS)[number];
+
+function ProjectSlide({ project, index }: { project: Project; index: number }) {
   const palette = usePalette();
-  const panelRefs = useRef<(HTMLElement | null)[]>([]);
+  const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const Mock = MOCKS[project.variant];
+  const imageFirst = index % 2 === 0;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headerRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: { trigger: panelRefs.current[0], start: "top 75%" },
-        }
-      );
-
-      rowRefs.current.forEach((row) => {
-        if (!row) return;
+      if (headerRef.current) {
         gsap.fromTo(
-          row,
+          headerRef.current,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+          }
+        );
+      }
+      if (rowRef.current) {
+        gsap.fromTo(
+          rowRef.current,
           { y: 50, opacity: 0 },
           {
             y: 0,
             opacity: 1,
             duration: 0.9,
             ease: "power3.out",
-            scrollTrigger: { trigger: row, start: "top 80%" },
+            scrollTrigger: { trigger: rowRef.current, start: "top 80%" },
           }
         );
-      });
+      }
     });
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <>
-      {PROJECTS.map((project, i) => {
-        const Mock = MOCKS[project.variant];
-        const imageFirst = i % 2 === 0;
+    <section
+      ref={sectionRef}
+      id={index === 0 ? "proyectos" : undefined}
+      className="panel relative flex flex-col justify-center min-h-svh md:h-svh md:overflow-hidden px-6 md:px-16 lg:px-24 py-24 md:py-0"
+      style={{ backgroundColor: palette.bg }}
+    >
+      <div
+        className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
+        style={{ backgroundColor: palette.primary }}
+      />
 
-        return (
-          <section
-            key={project.id}
-            id={i === 0 ? "proyectos" : undefined}
-            ref={(el) => {
-              panelRefs.current[i] = el;
-            }}
-            className="panel relative flex flex-col justify-center min-h-svh md:h-svh md:overflow-hidden px-6 md:px-16 lg:px-24 py-24 md:py-0"
-            style={{ backgroundColor: palette.bg }}
+      {index === 0 && (
+        <div ref={headerRef} className="max-w-3xl mb-12 md:mb-14 relative z-10">
+          <span
+            className="text-xs font-semibold tracking-[0.2em] uppercase mb-5 block"
+            style={{ color: palette.primary }}
           >
-            <div
-              className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
-              style={{ backgroundColor: palette.primary }}
-            />
+            Proyectos
+          </span>
+          <h2
+            className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
+            style={{ color: palette.text }}
+          >
+            Cosas que construí{" "}
+            <span style={{ color: palette.primary }}>y sostengo en producción</span>
+          </h2>
+        </div>
+      )}
 
-            {i === 0 && (
-              <div ref={headerRef} className="max-w-3xl mb-12 md:mb-14 relative z-10">
-                <span
-                  className="text-xs font-semibold tracking-[0.2em] uppercase mb-5 block"
-                  style={{ color: palette.primary }}
-                >
-                  Proyectos
-                </span>
-                <h2
-                  className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
-                  style={{ color: palette.text }}
-                >
-                  Cosas que construí{" "}
-                  <span style={{ color: palette.primary }}>y sostengo en producción</span>
-                </h2>
+      <div className="relative z-10">
+        <div ref={rowRef} className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className={imageFirst ? "md:order-1" : "md:order-2"}>
+            <div className="glass rounded-[2rem] aspect-[4/3] overflow-hidden relative">
+              <div className="absolute top-0 left-0 right-0 h-9 flex items-center gap-1.5 px-4 border-b" style={{ borderColor: palette.border }}>
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
               </div>
-            )}
-
-            <div className="relative z-10">
-              <div
-                ref={(el) => {
-                  rowRefs.current[i] = el;
-                }}
-                className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
-              >
-              <div className={imageFirst ? "md:order-1" : "md:order-2"}>
-                <div className="glass rounded-[2rem] aspect-[4/3] overflow-hidden relative">
-                  <div className="absolute top-0 left-0 right-0 h-9 flex items-center gap-1.5 px-4 border-b" style={{ borderColor: palette.border }}>
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
-                  </div>
-                  <div className="absolute inset-0 top-9">
-                    <Mock palette={palette} />
-                  </div>
-                </div>
-              </div>
-
-              <div className={imageFirst ? "md:order-2" : "md:order-1"}>
-                <span
-                  className="text-sm font-bold tracking-widest mb-4 block"
-                  style={{ color: palette.primary, opacity: 0.6 }}
-                >
-                  {project.index}
-                </span>
-                <h3
-                  className="text-3xl md:text-4xl font-bold mb-2 tracking-tight"
-                  style={{ color: palette.text }}
-                >
-                  {project.title}
-                </h3>
-                <p
-                  className="text-sm font-medium mb-5"
-                  style={{ color: palette.primary }}
-                >
-                  {project.subtitle}
-                </p>
-                <p
-                  className="text-base leading-relaxed mb-5"
-                  style={{ color: palette.textMuted }}
-                >
-                  {project.description}
-                </p>
-                <p
-                  className="text-sm font-semibold mb-6"
-                  style={{ color: palette.text }}
-                >
-                  {project.result}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-7">
-                  {project.stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="glass-pill rounded-full px-3 py-1.5 text-xs font-medium"
-                      style={{ color: palette.textMuted }}
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {project.private ? (
-                  <span
-                    className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-medium"
-                    style={{ color: palette.textMuted, opacity: 0.75 }}
-                  >
-                    <LockIcon size={14} />
-                    Código privado · Propiedad de la empresa
-                  </span>
-                ) : (
-                  <a
-                    href={project.github ?? "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-semibold transition-transform duration-300 hover:scale-105"
-                    style={{ color: palette.text }}
-                  >
-                    <GithubIcon size={16} />
-                    Ver código
-                    <ExternalLink size={13} style={{ opacity: 0.6 }} />
-                  </a>
-                )}
-              </div>
+              <div className="absolute inset-0 top-9">
+                <Mock palette={palette} />
               </div>
             </div>
-          </section>
-        );
-      })}
+          </div>
+
+          <div className={imageFirst ? "md:order-2" : "md:order-1"}>
+            <span className="text-sm font-bold tracking-widest mb-4 block" style={{ color: palette.primary, opacity: 0.6 }}>
+              {project.index}
+            </span>
+            <h3 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight" style={{ color: palette.text }}>
+              {project.title}
+            </h3>
+            <p className="text-sm font-medium mb-5" style={{ color: palette.primary }}>
+              {project.subtitle}
+            </p>
+            <p className="text-base leading-relaxed mb-5" style={{ color: palette.textMuted }}>
+              {project.description}
+            </p>
+            <p className="text-sm font-semibold mb-6" style={{ color: palette.text }}>
+              {project.result}
+            </p>
+
+            <div className="flex flex-wrap gap-2 mb-7">
+              {project.stack.map((tech) => (
+                <span key={tech} className="glass-pill rounded-full px-3 py-1.5 text-xs font-medium" style={{ color: palette.textMuted }}>
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+            {project.private ? (
+              <span
+                className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-medium"
+                style={{ color: palette.textMuted, opacity: 0.75 }}
+              >
+                <LockIcon size={14} />
+                Código privado · Propiedad de la empresa
+              </span>
+            ) : (
+              <a
+                href={project.github ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 glass-pill rounded-full px-5 py-2.5 text-sm font-semibold transition-transform duration-300 hover:scale-105"
+                style={{ color: palette.text }}
+              >
+                <GithubIcon size={16} />
+                Ver código
+                <ExternalLink size={13} style={{ opacity: 0.6 }} />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Projects() {
+  return (
+    <>
+      {PROJECTS.map((project, i) => (
+        <Panel key={project.id} index={FIRST_SLIDE_INDEX + i}>
+          <ProjectSlide project={project} index={i} />
+        </Panel>
+      ))}
     </>
   );
 }

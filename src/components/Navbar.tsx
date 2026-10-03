@@ -28,7 +28,7 @@ function isLightColor(hex: string): boolean {
 export default function Navbar() {
   const globalPalette = usePalette();
   const activeSlide = useActiveSlide();
-  const palette = { ...SLIDE_PALETTES[activeSlide % SLIDE_PALETTES.length], timeLabel: globalPalette.timeLabel, seasonLabel: globalPalette.seasonLabel };
+  const palette = { ...SLIDE_PALETTES[activeSlide] ?? SLIDE_PALETTES[0], timeLabel: globalPalette.timeLabel, seasonLabel: globalPalette.seasonLabel };
   const [open, setOpen] = useState(false);
   const [compact, setCompact] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
