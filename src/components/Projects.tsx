@@ -272,7 +272,7 @@ const MOCKS = {
 
 export default function Projects() {
   const palette = usePalette();
-  const sectionRef = useRef<HTMLElement>(null);
+  const panelRefs = useRef<(HTMLElement | null)[]>([]);
   const headerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -286,7 +286,7 @@ export default function Projects() {
           opacity: 1,
           duration: 0.8,
           ease: "power3.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+          scrollTrigger: { trigger: panelRefs.current[0], start: "top 75%" },
         }
       );
 
@@ -304,52 +304,57 @@ export default function Projects() {
           }
         );
       });
-    }, sectionRef);
+    });
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="proyectos"
-      className="relative px-6 md:px-16 lg:px-24 py-32 overflow-hidden"
-      style={{ backgroundColor: palette.bg }}
-    >
-      <div
-        className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
-        style={{ backgroundColor: palette.primary }}
-      />
+    <>
+      {PROJECTS.map((project, i) => {
+        const Mock = MOCKS[project.variant];
+        const imageFirst = i % 2 === 0;
 
-      <div ref={headerRef} className="max-w-3xl mb-20 md:mb-28 relative z-10">
-        <span
-          className="text-xs font-semibold tracking-[0.2em] uppercase mb-5 block"
-          style={{ color: palette.primary }}
-        >
-          Proyectos
-        </span>
-        <h2
-          className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
-          style={{ color: palette.text }}
-        >
-          Cosas que construí{" "}
-          <span style={{ color: palette.primary }}>y sostengo en producción</span>
-        </h2>
-      </div>
-
-      <div className="flex flex-col gap-24 md:gap-32 relative z-10">
-        {PROJECTS.map((project, i) => {
-          const Mock = MOCKS[project.variant];
-          const imageFirst = i % 2 === 0;
-
-          return (
+        return (
+          <section
+            key={project.id}
+            id={i === 0 ? "proyectos" : undefined}
+            ref={(el) => {
+              panelRefs.current[i] = el;
+            }}
+            className="panel relative flex flex-col justify-center min-h-svh md:h-svh md:overflow-hidden px-6 md:px-16 lg:px-24 py-24 md:py-0"
+            style={{ backgroundColor: palette.bg }}
+          >
             <div
-              key={project.id}
-              ref={(el) => {
-                rowRefs.current[i] = el;
-              }}
-              className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
-            >
+              className="absolute w-[38vw] h-[38vw] rounded-full blur-[140px] opacity-15 top-[15%] right-[-10%] pointer-events-none"
+              style={{ backgroundColor: palette.primary }}
+            />
+
+            {i === 0 && (
+              <div ref={headerRef} className="max-w-3xl mb-12 md:mb-14 relative z-10">
+                <span
+                  className="text-xs font-semibold tracking-[0.2em] uppercase mb-5 block"
+                  style={{ color: palette.primary }}
+                >
+                  Proyectos
+                </span>
+                <h2
+                  className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
+                  style={{ color: palette.text }}
+                >
+                  Cosas que construí{" "}
+                  <span style={{ color: palette.primary }}>y sostengo en producción</span>
+                </h2>
+              </div>
+            )}
+
+            <div className="relative z-10">
+              <div
+                ref={(el) => {
+                  rowRefs.current[i] = el;
+                }}
+                className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
+              >
               <div className={imageFirst ? "md:order-1" : "md:order-2"}>
                 <div className="glass rounded-[2rem] aspect-[4/3] overflow-hidden relative">
                   <div className="absolute top-0 left-0 right-0 h-9 flex items-center gap-1.5 px-4 border-b" style={{ borderColor: palette.border }}>
@@ -429,10 +434,11 @@ export default function Projects() {
                   </a>
                 )}
               </div>
+              </div>
             </div>
-          );
-        })}
-      </div>
-    </section>
+          </section>
+        );
+      })}
+    </>
   );
 }

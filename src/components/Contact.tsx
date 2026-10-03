@@ -129,7 +129,7 @@ export default function Contact() {
     <section
       ref={sectionRef}
       id="contacto"
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 md:px-12 py-24 overflow-hidden grain"
+      className="panel relative min-h-svh md:h-svh flex flex-col items-center justify-center px-6 md:px-12 py-24 overflow-hidden grain"
       style={{ backgroundColor: palette.bg }}
     >
       <div
