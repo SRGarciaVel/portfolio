@@ -96,7 +96,7 @@ export default function About() {
         viewRef.current = el;
       }}
       id="sobre-mi"
-      className="relative min-h-screen flex items-center justify-center px-6 md:px-12 py-32 overflow-hidden"
+      className="panel relative min-h-svh md:h-svh flex items-center justify-center px-6 md:px-12 py-24 md:py-8 overflow-hidden"
       style={{ backgroundColor: palette.bg }}
     >
       <div

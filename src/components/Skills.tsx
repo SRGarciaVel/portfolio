@@ -123,7 +123,7 @@ export default function Skills() {
     <section
       ref={sectionRef}
       id="skills"
-      className="relative min-h-screen flex flex-col justify-center px-6 md:px-16 lg:px-24 py-32 overflow-hidden"
+      className="panel relative min-h-svh md:h-svh flex flex-col justify-center px-6 md:px-16 lg:px-24 py-24 md:py-16 overflow-hidden"
       style={{ backgroundColor: palette.bg }}
     >
       <div
