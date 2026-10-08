@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
@@ -11,12 +11,37 @@ import Image from "next/image";
 
 type ProjectImage = { src: string; alt: string };
 
-/** Real screenshots replace the abstract mockup for projects that have one. */
-const PROJECT_IMAGES: Partial<Record<string, ProjectImage>> = {
-  "tdf-edeportes": {
-    src: "/projects/tdf-edeportes.webp",
-    alt: "Página principal de TDF e-deportes",
-  },
+/** Real screenshots replace the abstract mockup for projects that have them.
+ *  More than one image renders a small switcher inside the mock frame. */
+const PROJECT_IMAGES: Partial<Record<string, ProjectImage[]>> = {
+  gestionfactura: [
+    {
+      src: "/projects/gestionfactura.webp",
+      alt: "Dashboard de GestionFactura con datos de ejemplo",
+    },
+  ],
+  "tdf-edeportes": [
+    {
+      src: "/projects/tdf-edeportes.webp",
+      alt: "Página principal de TDF e-deportes",
+    },
+  ],
+  "tdf-random-select": [
+    {
+      src: "/projects/tdf-random-select-1.webp",
+      alt: "Panel de control de TDF Random Select durante un baneo",
+    },
+    {
+      src: "/projects/tdf-random-select-2.webp",
+      alt: "Overlay de TDF Random Select mostrando el reveal de personajes en OBS",
+    },
+  ],
+  "sf6-session-tracker": [
+    {
+      src: "/projects/sf6-session-tracker.webp",
+      alt: "Dashboard de SF6 Session Tracker con datos de demostración",
+    },
+  ],
 };
 import { prefersReducedMotion } from "@/lib/motionPrefs";
 import type { Palette } from "@/lib/colorSystem";
@@ -95,16 +120,16 @@ const PROJECTS = [
     private: false,
   },
   {
-    id: "fgcdle",
+    id: "sf6-session-tracker",
     index: "04",
-    title: "FGCdle",
-    subtitle: "Quiz Musical sobre Soundtracks de Videojuegos",
+    title: "SF6 Session Tracker",
+    subtitle: "Tracker de Sesión y Overlay para Stream en Tiempo Real",
     description:
-      "Aplicación tipo Heardle centrada en OSTs de videojuegos de pelea, desplegada en producción con base de usuarios activa. Backend con fuzzy matching para validar respuestas, frontend con sistema de audio por etapas.",
-    result: "En producción · Cloudflare R2 · Supabase · Vercel",
-    stack: ["FastAPI", "React", "Vite", "Tailwind", "Supabase"],
-    variant: "game" as const,
-    github: "https://github.com/SRGarciaVel/fgcdle-game-cl-client",
+      "Dashboard y overlay de OBS que siguen una sesión de Street Fighter 6 en vivo: victorias, derrotas, racha y cambio de LP por personaje, sin hotkeys ni conteo manual. Una extensión de navegador (SST Companion) lee los datos de Buckler's Boot Camp dentro de la sesión del propio usuario; las credenciales de Capcom nunca llegan al servidor.",
+    result: "Actualizaciones en tiempo real vía SSE · Closed beta",
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "SSE", "Chrome Extension"],
+    variant: "dashboard" as const,
+    github: "https://github.com/SRGarciaVel/sf6-session-tracker",
     private: false,
   },
 ];
@@ -155,66 +180,6 @@ function DashboardMock({ palette }: { palette: Palette }) {
               height: `${h}%`,
               backgroundColor: i % 2 === 0 ? palette.primary : palette.secondary,
               opacity: 0.75,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function GameMock({ palette }: { palette: Palette }) {
-  const barsRef = useRef<HTMLDivElement>(null);
-  const tweensRef = useRef<gsap.core.Tween[]>([]);
-  const { ref: viewRef, inView } = useInView<HTMLDivElement>(0.2);
-
-  useEffect(() => {
-    if (!barsRef.current) return;
-    const bars = Array.from(barsRef.current.children);
-    tweensRef.current = bars.map((bar, i) =>
-      gsap.to(bar, {
-        scaleY: gsap.utils.random(0.3, 1),
-        duration: 0.4 + Math.random() * 0.4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: i * 0.05,
-        paused: true,
-      })
-    );
-    return () => tweensRef.current.forEach((t) => t.kill());
-  }, []);
-
-  // Only spend CPU animating the waveform while it's actually on screen
-  useEffect(() => {
-    tweensRef.current.forEach((t) => (inView ? t.play() : t.pause()));
-  }, [inView]);
-
-  return (
-    <div ref={viewRef} className="w-full h-full flex flex-col items-center justify-center gap-6 p-6">
-      <div
-        className="w-16 h-16 rounded-full flex items-center justify-center chip"
-        style={{ boxShadow: `0 0 32px ${palette.glow}` }}
-      >
-        <div
-          className="w-0 h-0 ml-1"
-          style={{
-            borderTop: "10px solid transparent",
-            borderBottom: "10px solid transparent",
-            borderLeft: `16px solid ${palette.primary}`,
-          }}
-        />
-      </div>
-      <div ref={barsRef} className="flex items-center gap-1.5 h-16">
-        {Array.from({ length: 24 }).map((_, i) => (
-          <div
-            key={i}
-            className="w-1.5 rounded-full"
-            style={{
-              height: "100%",
-              backgroundColor: i % 3 === 0 ? palette.primary : palette.secondary,
-              opacity: 0.7,
-              transform: "scaleY(0.5)",
             }}
           />
         ))}
@@ -278,7 +243,6 @@ function DraftMock({ palette }: { palette: Palette }) {
 
 const MOCKS = {
   dashboard: DashboardMock,
-  game: GameMock,
   draft: DraftMock,
 };
 
@@ -292,7 +256,8 @@ function ProjectSlide({ project, index }: { project: Project; index: number }) {
   const headerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const Mock = MOCKS[project.variant];
-  const image = PROJECT_IMAGES[project.id];
+  const images = PROJECT_IMAGES[project.id];
+  const [activeImage, setActiveImage] = useState(0);
   const imageFirst = index % 2 === 0;
 
   useEffect(() => {
@@ -368,12 +333,39 @@ function ProjectSlide({ project, index }: { project: Project; index: number }) {
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: palette.textMuted, opacity: 0.4 }} />
               </div>
               <div className="absolute inset-0 top-9">
-                {image ? (
-                  <Image src={image.src} alt={image.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
+                {images ? (
+                  <Image
+                    key={images[activeImage].src}
+                    src={images[activeImage].src}
+                    alt={images[activeImage].alt}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover object-top"
+                  />
                 ) : (
                   <Mock palette={palette} />
                 )}
               </div>
+
+              {images && images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+                  {images.map((img, i) => (
+                    <button
+                      key={img.src}
+                      type="button"
+                      onClick={() => setActiveImage(i)}
+                      aria-label={`Ver captura ${i + 1} de ${images.length}`}
+                      aria-current={i === activeImage}
+                      className="w-1.5 h-1.5 rounded-full transition-transform duration-200"
+                      style={{
+                        backgroundColor: i === activeImage ? palette.primary : palette.textMuted,
+                        opacity: i === activeImage ? 1 : 0.5,
+                        transform: i === activeImage ? "scale(1.4)" : "scale(1)",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
