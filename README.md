@@ -18,10 +18,11 @@
 
 ## Sobre este proyecto
 
-Portafolio personal construido con Next.js (App Router) y TypeScript. El fondo y las superficies "glass" del sitio cambian de paleta según la hora del día y la estación del año en Chile, así que nunca se ve exactamente igual dos veces.
+Portafolio personal construido con Next.js (App Router) y TypeScript. Cada sección es un panel de pantalla completa con su propia paleta de color; al bajar, los paneles se apilan con `position: sticky` y `scroll-snap` nativos de CSS, sin ninguna librería de scroll.
 
-- **Server Components por defecto**: la paleta de color se lee del contexto solo donde hay interactividad real, no en el árbol completo de la página.
-- **GSAP** para scroll-reveals, timelines y parallax, respetando `prefers-reduced-motion` en cada animación ambiental.
+- **Server Components por defecto**: cada panel provee su propia paleta por contexto, solo donde hay interactividad real, no en el árbol completo de la página.
+- **Apilado con CSS nativo**: `position: sticky` + `scroll-snap`, sin librería de scroll. El avance entre paneles se resuelve en `scrollend`, no con scroll virtual por JavaScript.
+- **GSAP** para scroll-reveals y timelines, respetando `prefers-reduced-motion` en cada animación ambiental.
 - **SEO completo**: metadata, `robots.ts`, `sitemap.ts`, imagen Open Graph generada con `next/og` y structured data (`Person`).
 - **Un solo motor de animación**: sin dependencias de UI redundantes.
 
@@ -32,7 +33,7 @@ Portafolio personal construido con Next.js (App Router) y TypeScript. El fondo y
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Lenguaje | TypeScript |
 | Estilos | Tailwind CSS 4 |
-| Animación | GSAP · ScrollTrigger · ScrollSmoother |
+| Animación | GSAP · ScrollTrigger |
 | Iconos | lucide-react |
 | Hosting | Vercel |
 

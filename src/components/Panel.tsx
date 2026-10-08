@@ -9,7 +9,7 @@ import type { Palette } from "@/lib/colorSystem";
  *  surfaces. `display: contents` keeps this wrapper out of the layout, so the
  *  slide stays a direct child for the layered pinning logic. */
 export default function Panel({ index, children }: { index: number; children: ReactNode }) {
-  const base = SLIDE_PALETTES[index % SLIDE_PALETTES.length];
+  const base = SLIDE_PALETTES[index];
   const palette: Palette = { ...base, timeLabel: "", seasonLabel: "" };
   const light = isLightHex(base.bg);
 

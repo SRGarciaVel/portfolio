@@ -24,7 +24,7 @@ const CREDENTIALS = [
     title: "Ingeniería de Ejecución en Computación e Informática",
     subtitle: "Universidad del Bío-Bío, Concepción, Chile",
     issuer: "Universidad del Bío-Bío",
-    status: "Tesis aprobada Dic 2025 · Titulación estimada Ago–Dic 2026",
+    status: "Egresado Dic 2025 · Título en trámite",
     icon: (
       <path d="M12 3 1 8l11 5 9-4.1V17h2V8L12 3Zm-7 8.8V16c0 2.2 3.1 4 7 4s7-1.8 7-4v-4.2l-7 3.2-7-3.2Z" />
     ),

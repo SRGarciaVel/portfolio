@@ -30,6 +30,13 @@ const CATEGORIES = [
     icon: <path d="M12 2a5 5 0 0 1 5 5c0 2-1 3-1 5v2H8v-2c0-2-1-3-1-5a5 5 0 0 1 5-5ZM9 18h6M10 21h4" />,
     tags: ["LLMs", "pgvector", "RAG", "Whisper"],
   },
+  {
+    title: "Sistemas & Redes",
+    description:
+      "Administro infraestructura Linux a diario y entiendo la red bajo la aplicación: DNS, firewall, VPN, direccionamiento IP. Lo que no se ve, pero sin lo cual nada corre.",
+    icon: <path d="M3 4h18v6H3V4Zm0 10h18v6H3v-6Zm4-7h.01M7 17h.01M12 7h6M12 17h6" />,
+    tags: ["Linux", "Bash", "DNS", "VPN"],
+  },
 ];
 
 /** 3D tilt on hover, tracking the pointer within the card bounds. */
@@ -147,7 +154,7 @@ export default function Skills() {
         </h2>
       </div>
 
-      <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+      <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
         {CATEGORIES.map((cat, i) => (
           <TiltCard key={cat.title} index={i}>
             <div
