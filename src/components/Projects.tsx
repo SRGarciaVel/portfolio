@@ -127,7 +127,7 @@ const PROJECTS = [
     description:
       "Dashboard y overlay de OBS que siguen una sesión de Street Fighter 6 en vivo: victorias, derrotas, racha y cambio de LP por personaje, sin hotkeys ni conteo manual. Una extensión de navegador (SST Companion) lee los datos de Buckler's Boot Camp dentro de la sesión del propio usuario; las credenciales de Capcom nunca llegan al servidor.",
     result: "Actualizaciones en tiempo real vía SSE · Closed beta",
-    stack: ["Next.js", "TypeScript", "PostgreSQL", "SSE", "Chrome Extension"],
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "SSE", "Vitest", "Chrome Extension"],
     variant: "dashboard" as const,
     github: "https://github.com/SRGarciaVel/sf6-session-tracker",
     private: false,
